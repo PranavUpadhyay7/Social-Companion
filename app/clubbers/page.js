@@ -1,0 +1,30 @@
+"use client";
+import React from "react";
+
+function page() {
+  return (
+    <div className="flex flex-row w-[100vw] justify-between">
+      <div className="flex flex-col gap-10 pl-8 pr-24 border-r-[1px] border-stone-800 h-[100vh]">
+        <div className="pt-20">
+          <img src="null" alt="Profile Picture"></img>
+        </div>
+        <div>
+          <h1 className="text-white">ap name</h1>
+        </div>
+        <div>
+          <h1 className="text-white">conversation</h1>
+        </div>
+        <div>
+          <h1 className="text-white">groups</h1>
+        </div>
+      </div>
+      <div className="pt-20">
+        <img src="null" alt="Profile Picture"></img>
+      </div>
+      <div className="pt-20">
+        <img src="null" alt="Profile Picture"></img>
+      </div>
+    </div>
+  );
+}
+export default page;
