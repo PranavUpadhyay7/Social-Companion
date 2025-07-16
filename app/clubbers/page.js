@@ -9,7 +9,7 @@ function page() {
           <img src="null" alt="Profile Picture"></img>
         </div>
         <div>
-          <h1 className="text-white">ap name</h1>
+          <h1 className="text-white">app name</h1>
         </div>
         <div>
           <h1 className="text-white">conversation</h1>
