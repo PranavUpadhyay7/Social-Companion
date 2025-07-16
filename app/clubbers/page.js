@@ -12,7 +12,7 @@ function page() {
           <h1 className="text-white">app name</h1>
         </div>
         <div>
-          <h1 className="text-white">conversation</h1>
+          <h1 className="text-white">Conversation</h1>
         </div>
         <div>
           <h1 className="text-white">groups</h1>
