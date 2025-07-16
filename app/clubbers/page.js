@@ -15,7 +15,7 @@ function page() {
           <h1 className="text-white">Conversation</h1>
         </div>
         <div>
-          <h1 className="text-white">groups</h1>
+          <h1 className="text-white">Groups</h1>
         </div>
       </div>
       <div className="pt-20">
