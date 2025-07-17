@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Feed from "./ClubberComponents/Feed";
 
 function page() {
   return (
@@ -19,7 +20,7 @@ function page() {
         </div>
       </div>
       <div className="pt-20">
-        <img src="null" alt="Profile Picture"></img>
+        <Feed />
       </div>
       <div className="pt-20">
         <img src="null" alt="Profile Picture"></img>

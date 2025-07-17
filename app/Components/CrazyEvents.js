@@ -15,7 +15,7 @@ function cardmap(cardobject) {
   );
 }
 
-function CrazyEvents() {
+function crazyEvents() {
   return (
     <div className=" pt-[20px] md:pt-[60px]">
       <section className="bg-black text-white py-0 md:py-4 px-6">
@@ -30,4 +30,4 @@ function CrazyEvents() {
   );
 }
 
-export default CrazyEvents;
+export default crazyEvents;

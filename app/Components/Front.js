@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 
-const Front = () => {
+const front = () => {
   return (
     <div className=" bg-black ">
       <div className="w-full flex justify-center px-4 pt-20 lg:pt-[200px] md:pt-[120px] pb-8 md:pb-16 lg:pb-20 ">
@@ -40,4 +40,4 @@ const Front = () => {
   );
 };
 
-export default Front;
+export default front;
