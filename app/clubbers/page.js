@@ -1,28 +1,19 @@
 "use client";
 import React from "react";
-import Feed from "./ClubberComponents/Feed";
+
+import FirstDiv from "./ClubberComponents/FirstDiv";
+import FeedMap from "./ClubberComponents/FeedMap";
 
 function page() {
   return (
     <div className="flex flex-row w-[100vw] justify-between">
-      <div className="flex flex-col gap-10 pl-8 pr-24 border-r-[1px] border-stone-800 h-[100vh]">
-        <div className="pt-20">
-          <img src="null" alt="Profile Picture"></img>
-        </div>
-        <div>
-          <h1 className="text-white">app name</h1>
-        </div>
-        <div>
-          <h1 className="text-white">Conversation</h1>
-        </div>
-        <div>
-          <h1 className="text-white">Groups</h1>
-        </div>
+      <div className=" w-1/3">
+        <FirstDiv />
       </div>
-      <div className="pt-20">
-        <Feed />
+      <div className="pt-20 w-2/3  h-[100vh">
+        <FeedMap />
       </div>
-      <div className="pt-20">
+      <div className="pt-20 w-1/3">
         <img src="null" alt="Profile Picture"></img>
       </div>
     </div>
