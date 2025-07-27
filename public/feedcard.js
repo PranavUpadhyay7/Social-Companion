@@ -17,6 +17,12 @@ const feedcard = [
     pn: "Pranav",
     fp: "/images/3.jpeg",
   },
+  {
+    id: 4,
+    pi: "/images/2.jpeg",
+    pn: "Pranav",
+    fp: "/images/4.jpeg",
+  },
 ];
 
 export default feedcard;
