@@ -10,30 +10,36 @@ import Link from "next/link";
 function FirstDiv() {
   return (
     <div>
-      <div className="fixed flex flex-col gap-16 md:px-6 xl:px-20 border-r-[1px] border-stone-800 h-[100vh] ">
-        <div className="pt-16 pb-20 xl:block md:text-[1vw] xl:text-[2vw] italic font-black text-white">
+      <div className="fixed flex flex-col gap-16 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
+        <div className="pt-16 pb-20 px-6 xl:block md:text-[1vw] xl:text-[2vw] italic font-black text-white">
           <Link href="/">
             <h1 className="">SceneMates</h1>
           </Link>
         </div>
-        <div className="flex flex-row gap-3 ">
-          <HomeIcon className="h-6 w-6 text-white " />
-          <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
-            Home
-          </h1>
-        </div>
-        <div className="flex flex-row gap-3 ">
-          <ChatBubbleBottomCenterTextIcon className="h-6 w-6 text-white" />
-          <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
-            Conversation
-          </h1>
-        </div>
-        <div className="flex flex-row gap-3 ">
-          <UserGroupIcon className="h-6 w-6 text-white" />
-          <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
-            Groups
-          </h1>
-        </div>
+        <button className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md">
+          <div className="flex flex-row gap-3 ">
+            <HomeIcon className="h-6 w-6 text-white " />
+            <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
+              Home
+            </h1>
+          </div>
+        </button>
+        <button className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md">
+          <div className="flex flex-row gap-3 ">
+            <ChatBubbleBottomCenterTextIcon className="h-6 w-6 text-white" />
+            <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
+              Conversation
+            </h1>
+          </div>{" "}
+        </button>
+        <button className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md">
+          <div className="flex flex-row gap-3 ">
+            <UserGroupIcon className="h-6 w-6 text-white" />
+            <h1 className="hidden xl:block xl:text-white  xl:font-extrabold xl:text-md">
+              Groups
+            </h1>
+          </div>{" "}
+        </button>
       </div>
     </div>
   );
