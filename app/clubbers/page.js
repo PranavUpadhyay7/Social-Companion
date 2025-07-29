@@ -7,7 +7,7 @@ import ThirdDiv from "./ClubberComponents/ThirdDiv";
 
 function page() {
   return (
-    <div className="flex flex-row w-[100vw] justify-between">
+    <div className="flex  md:flex-row w-[100vw] justify-between">
       <div className=" w-1/3">
         <FirstDiv />
       </div>
