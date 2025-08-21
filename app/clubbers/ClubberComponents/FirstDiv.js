@@ -11,7 +11,7 @@ import Link from "next/link";
 function FirstDiv() {
   return (
     <div>
-      <div className="fixed flex flex-col gap-16 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
+      <div className="fixed flex flex-col gap-10 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
         <div className="pt-16 pb-20 px-6 xl:block md:text-[1vw] xl:text-[2vw] italic font-black text-white">
           <Link href="/">
             <h1 className="">SceneMates</h1>
