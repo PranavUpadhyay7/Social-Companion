@@ -10,7 +10,7 @@ export default function Home() {
         <LiquidChrome
           baseColor={[0.1, 0.0, 0.2]}
           speed={0.22}
-          amplitude={0.15}
+          amplitude={0.3}
           interactive={false}
         />
       </div>

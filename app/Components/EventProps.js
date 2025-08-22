@@ -11,7 +11,7 @@ function EventProps(props) {
         />
         <h3 className="text-xl font-semibold mb-1">{props.title}</h3>
         <p className="text-gray-400 text-sm mb-3">{props.venue}</p>
-        <button className="px-6 py-2 bg-[#39ff14] text-black font-bold rounded-xl hover:bg-[#66ff66]">
+        <button className="px-6 py-2 bg-black text-white font-bold rounded-xl hover:bg-[#c83349]">
           {props.buttontext}
         </button>
       </div>
@@ -20,3 +20,4 @@ function EventProps(props) {
 }
 
 export default EventProps;
+//bg-[#39ff14]
