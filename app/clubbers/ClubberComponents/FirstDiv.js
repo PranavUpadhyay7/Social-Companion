@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useState } from "react";
 import {
   HomeIcon,
   ChatBubbleBottomCenterTextIcon,
@@ -9,6 +10,15 @@ import {
 import Link from "next/link";
 
 function FirstDiv() {
+  const [hidden, block] = useState("hidden");
+
+  function divShow() {
+    block("block");
+    console.log("Current hidden state:", hidden);
+  }
+
+  function divHide() {}
+
   return (
     <div>
       <div className="fixed flex flex-col gap-10 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
@@ -57,6 +67,18 @@ function FirstDiv() {
               </h1>
             </div>
           </Link>
+        </button>
+        <button
+          className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md"
+          onClick={divShow}
+        >
+          {" "}
+          <div className="flex justify-center xl:justify-start items-center gap-0 xl:gap-3">
+            <Cog6ToothIcon className="h-6 w-6 text-white" />
+            <h1 className="hidden xl:block xl:text-white xl:font-extrabold xl:text-md">
+              Settings
+            </h1>
+          </div>
         </button>
       </div>
     </div>
