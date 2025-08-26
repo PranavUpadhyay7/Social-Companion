@@ -8,19 +8,29 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import EditProfile from "@/app/settingsu/SettingComponents/EditProfile";
 
 function FirstDiv() {
-  const [hidden, block] = useState("hidden");
+  const [modalVisibility, setModalVisibility] = useState("hidden");
 
   function divShow() {
-    block("block");
-    console.log("Current hidden state:", hidden);
+    setModalVisibility("block");
   }
 
-  function divHide() {}
+  function divHide() {
+    setModalVisibility("hidden");
+  }
 
   return (
     <div>
+      <div
+        className={
+          // prettier-ignore
+          `fixed ${modalVisibility} inset-0 z-50 flex items-center justify-center bg-black/30`
+        }
+      >
+        <EditProfile />
+      </div>
       <div className="fixed flex flex-col gap-10 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
         <div className="pt-16 pb-20 px-6 xl:block md:text-[1vw] xl:text-[2vw] italic font-black text-white">
           <Link href="/">
@@ -57,22 +67,10 @@ function FirstDiv() {
             </div>
           </Link>
         </button>{" "}
-        <button className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md">
-          <Link href="/settingsu">
-            {" "}
-            <div className="flex justify-center xl:justify-start items-center gap-0 xl:gap-3">
-              <Cog6ToothIcon className="h-6 w-6 text-white" />
-              <h1 className="hidden xl:block xl:text-white xl:font-extrabold xl:text-md">
-                Settings
-              </h1>
-            </div>
-          </Link>
-        </button>
         <button
           className="hover:bg-zinc-800 mx-4 px-2 py-2 rounded-md"
           onClick={divShow}
         >
-          {" "}
           <div className="flex justify-center xl:justify-start items-center gap-0 xl:gap-3">
             <Cog6ToothIcon className="h-6 w-6 text-white" />
             <h1 className="hidden xl:block xl:text-white xl:font-extrabold xl:text-md">
@@ -86,3 +84,4 @@ function FirstDiv() {
 }
 
 export default FirstDiv;
+//onClick={divShow}

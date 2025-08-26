@@ -6,7 +6,7 @@ import { XMarkIcon, HomeIcon } from "@heroicons/react/24/outline";
 const EditProfile = () => {
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-black/50">
-      <div className="relative flex flex-col items-center justify-center h-[70vh] w-[35vw] bg-zinc-900">
+      <div className="relative flex flex-col rounded-lg items-center justify-center h-[70vh] w-[35vw] bg-zinc-900">
         <XMarkIcon className="h-6 w-6 text-white absolute top-4 right-4 cursor-pointer" />
 
         <div className="text-white font-bold text-center mb-4">
