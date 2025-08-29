@@ -6,7 +6,9 @@ import {
   ChatBubbleBottomCenterTextIcon,
   UserGroupIcon,
   Cog6ToothIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
+
 import Link from "next/link";
 import EditProfile from "@/app/settingsu/SettingComponents/EditProfile";
 
@@ -29,7 +31,49 @@ function FirstDiv() {
           `fixed ${modalVisibility} inset-0 z-50 flex items-center justify-center bg-black/30`
         }
       >
-        <EditProfile />
+        <div className="flex items-center justify-center h-screen w-screen bg-black/50">
+          <div className="relative flex flex-col rounded-lg items-center justify-center h-[70vh] w-[35vw] bg-zinc-900">
+            <XMarkIcon
+              className="h-6 w-6 text-white absolute top-4 right-4 cursor-pointer"
+              onClick={divHide}
+            />
+
+            <div className="text-white font-bold text-center mb-4">
+              Profile Picture
+            </div>
+            <form
+              onSubmit={null}
+              className="flex flex-col gap-2 w-[30vw] mx-auto p-6  rounded-lg"
+            >
+              <h1 className="text-white font-semibold text-base">Bio</h1>
+              <input
+                type="text"
+                name="bio"
+                placeholder=""
+                onChange={null}
+                className="border bg-zinc-900 text-white text-sm hover:bg-zinc-800 border-gray-500  p-3 mb-6 rounded-lg 
+             focus:outline-none focus:ring-[1px] focus:ring-[#7F00FF] 
+             focus:border-[#7F00FF] transition-all duration-200  "
+              />
+              <h1 className="text-white font-semibold">Gender</h1>
+              <input
+                type=""
+                name=""
+                placeholder=""
+                onChange={null}
+                className="border bg-zinc-900 text-white hover:bg-zinc-800 p-3 mb-6 border-gray-500 rounded-lg 
+             focus:outline-none focus:ring-[1px] focus:ring-[#7F00FF] 
+             focus:border-[#7F00FF] transition-all duration-200"
+              />
+              <button
+                type="submit"
+                className="text-white bg-[#7F00FF] px-3 py-4 rounded-lg"
+              >
+                Update Profile
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
       <div className="fixed flex flex-col gap-10 mx-auto text-center border-r-[1px] border-stone-800 h-[100vh] ">
         <div className="pt-16 pb-20 px-6 xl:block md:text-[1vw] xl:text-[2vw] italic font-black text-white">
