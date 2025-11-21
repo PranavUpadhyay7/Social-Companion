@@ -8,9 +8,9 @@ export default function Home() {
       {/* Background (fixed, covers screen) */}
       <div className="fixed inset-0 -z-10">
         <LiquidChrome
-          baseColor={[0.1, 0.0, 0.2]}
+          baseColor={[0.2, 0.0, 0.0]}
           speed={0.22}
-          amplitude={0.3}
+          amplitude={0.25}
           interactive={false}
         />
       </div>

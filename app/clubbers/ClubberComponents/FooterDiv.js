@@ -13,7 +13,9 @@ const FooterDiv = () => {
     <div>
       <div className="fixed bottom-0 left-0 w-full z-50 bg-black text-white flex justify-around items-center p-4 ">
         <div>
-          <HomeIcon className="h-6 w-6 text-white" />
+          <Link href="/">
+            <HomeIcon className="h-6 w-6 text-white" />
+          </Link>
         </div>
         <div>
           <ChatBubbleBottomCenterTextIcon className="h-6 w-6 text-white" />
