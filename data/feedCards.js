@@ -1,4 +1,4 @@
-const feedcard = [
+const feedCards = [
   {
     id: 1,
     pi: "/images/3.jpeg",
@@ -25,4 +25,4 @@ const feedcard = [
   },
 ];
 
-export default feedcard;
+export default feedCards;

@@ -1,5 +1,5 @@
 import React from "react";
-import EditProfile from "./SettingComponents/EditProfile";
+import EditProfile from "@/components/settings/EditProfile";
 
 const page = () => {
   return (

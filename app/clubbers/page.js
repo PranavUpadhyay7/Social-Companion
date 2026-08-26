@@ -1,32 +1,34 @@
-"use client";
-import React from "react";
-import FooterDiv from "./ClubberComponents/FooterDiv";
-import FirstDiv from "./ClubberComponents/FirstDiv";
-import FeedMap from "./ClubberComponents/FeedMap";
-import ThirdDiv from "./ClubberComponents/ThirdDiv";
+import SideRays from "@/components/effects/SideRays";
+import SwipeDeck from "@/components/clubbers/SwipeDeck";
 
-function page() {
+export default function ClubbersPage() {
   return (
-    <>
-      <div className="bg-black">
-        <div className="flex flex-col md:flex-row w-[100vw] justify-between">
-          <div className="block w-1/3">
-            <FirstDiv />
-          </div>
-          <div className="pt-20 md:w-2/3 text-center mx-auto h-[100vh]">
-            <FeedMap />
-          </div>
-          <div className="hidden md:block md:pt-20 md:w-1/3">
-            <ThirdDiv />
-          </div>
-        </div>
-
-        {/*
-        <div className="md:hidden">
-          <FooterDiv />
-        </div>*/}
+    <main className="relative min-h-[calc(100dvh-5rem)] overflow-hidden px-4 pb-16 pt-7 text-white sm:px-8 sm:pt-10 lg:px-10">
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <SideRays
+          origin="top-right"
+          speed={2.5}
+          rayColor1="#ffffff"
+          rayColor2="#a95bf4"
+          intensity={2.5}
+          spread={1.2}
+          tilt={-35}
+          saturation={1.5}
+          blend={0.75}
+          falloff={0.5}
+          opacity={1}
+        />
       </div>
-    </>
+      <div className="mx-auto mb-8 max-w-[1100px] text-center xl:hidden">
+        <h1 className="text-4xl font-medium tracking-[-0.05em] text-white sm:text-5xl">
+          Find someone on your wavelength.
+        </h1>
+        <p className="mx-auto mt-4 max-w-[46ch] text-sm leading-6 text-zinc-400">
+          Meet people interested in the same events and make your next night a
+          shared one.
+        </p>
+      </div>
+      <SwipeDeck />
+    </main>
   );
 }
-export default page;

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "/events": {
+      "targetKind": "existing-ui",
+      "projectId": "9855a242-787b-4155-8f86-08e9a952b4db",
+      "baselineDraftId": "78aff527-6b9a-494c-a4e5-02395f4dc7e2",
+      "activeDraftId": "78aff527-6b9a-494c-a4e5-02395f4dc7e2",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "app/globals.css",
+        "tailwind.config.js",
+        "app/events/page.js",
+        "components/events/FeaturedEvent.js",
+        "components/events/EventGrid.js",
+        "components/events/EventCard.js",
+        "components/events/FilterDrawer.js",
+        "data/events.js"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "fcbe1430c1db1c37982e7c26cdc93cc51eef48cdcfd27ff47011195bf979efd0",
+        "app/globals.css": "1f687e5c9125db9d0af85eb6d46d40e3f3c1942102122edf1e4cf7e9daeabcc8",
+        "tailwind.config.js": "151d846068b4afa65c49daa3942dc044d05c8b03669f6383adc90b9894d977c6",
+        "app/events/page.js": "f42894799d1feb66a79dae1caa516dc6a1f67ff9c69927f0a6cdfe76a9901221",
+        "components/events/FeaturedEvent.js": "ddbb14a882d5a6a5aae54775ad86e3e0f21da3c84b9b04884839c0389dcb9262",
+        "components/events/EventGrid.js": "64f8a57d64ffdc4f3271d6c136a166d00e2738f43493486dbd8c63ec007564b8",
+        "components/events/EventCard.js": "064b34cb83cd5a26ea2264b24df3d2f5ee2c550fd509eaacad6a4b54c61f063e",
+        "components/events/FilterDrawer.js": "d2c3810ced7a94ad9d9152d7d57c4fb9a19a744b77b893af8064b34e5c6518a6",
+        "data/events.js": "2d8275c1549da4c37b3b749c37fbc22033e88de0489b3dd799ed9887af01aa07"
+      },
+      "components": [],
+      "drafts": {
+        "78aff527-6b9a-494c-a4e5-02395f4dc7e2": {
+          "title": "Minimal Events Page",
+          "visualDirection": "minimal spacious cinematic nightlife editorial",
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-08-24T15:00:00.000Z"
+    }
+  }
+}

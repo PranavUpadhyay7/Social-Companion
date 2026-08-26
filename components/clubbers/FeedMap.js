@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import feedcard from "@/public/feedcard";
+import feedCards from "@/data/feedCards";
 import FeedProps from "./FeedProps";
 
 function feedmap(feedobject) {
@@ -14,7 +14,7 @@ function feedmap(feedobject) {
   );
 }
 const FeedMap = () => {
-  return <div className="flex flex-col gap-20">{feedcard.map(feedmap)}</div>;
+  return <div className="flex flex-col gap-20">{feedCards.map(feedmap)}</div>;
 };
 
 export default FeedMap;
