@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SceneMates
 
-## Getting Started
+SceneMates is a Next.js nightlife discovery and social matching app. Events, groups and the landing page are public. Clubbers, profiles, matches, private media and chat require a registered Google account.
 
-First, run the development server:
+## Local setup
+
+Install dependencies and create the local environment file:
+
+```bash
+npm install
+cp .env.example .env.local
+openssl rand -base64 32
+```
+
+Copy the generated value into `AUTH_SECRET` in `.env.local`. Do not paste it into source files or commit it.
+
+Create a Google OAuth web client and add these local URLs:
+
+- Authorized JavaScript origin: `http://localhost:3000`
+- Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
+
+Then set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` in `.env.local`, start MongoDB, and run:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Register once on the auth page, then use the login action with that same Google account on later visits.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## MongoDB data
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`MONGODB_URI` defaults to `mongodb://127.0.0.1:27017/scenemates` in local development. The application stores:
 
-## Learn More
+- Auth.js users and minimal Google account linkage
+- SceneMates profile fields and private GridFS media
+- Vibed With records, conversations and messages
 
-To learn more about Next.js, take a look at the following resources:
+Google passwords are never available to SceneMates. Provider access, refresh and ID tokens are removed before an account record is stored. Browser sessions use signed, HTTP-only cookies, and API authorization is derived from the server session rather than a user ID supplied by the client.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Never commit `.env.local`, OAuth credentials, database connection strings or `AUTH_SECRET`.
+- Use a separate OAuth client and database user for production.
+- Use HTTPS in production and replace the local Google origin and callback with the exact production URLs.
+- Give the production MongoDB user only the permissions this application needs.
+- Profile uploads are type, signature, size and count checked before being stored.
+- The in-memory API rate limiter is suitable for local development. Replace it with a shared Redis-backed limiter before running multiple production instances.
 
-## Deploy on Vercel
+Run the project checks with:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+npm audit --omit=dev
+```

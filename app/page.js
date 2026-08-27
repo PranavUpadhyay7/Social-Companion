@@ -1,6 +1,7 @@
 import CrazyEvents from "@/components/home/CrazyEvents";
 import Front from "@/components/home/Front";
 import HowItWorks from "@/components/home/HowItWorks";
+import HoverFeaturedEvents from "@/components/home/HoverFeaturedEvents";
 import SideRays from "@/components/effects/SideRays";
 
 export default function Home() {
@@ -34,6 +35,7 @@ export default function Home() {
       {/* Foreground Content */}
       <Front />
       <HowItWorks />
+      <HoverFeaturedEvents />
       <CrazyEvents />
     </div>
   );

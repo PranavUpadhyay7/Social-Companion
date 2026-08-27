@@ -1,49 +1,104 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  Heart,
-  MessageCircle,
-  Music2,
-  RotateCcw,
-  Users,
-  X,
-} from "lucide-react";
-import { clubbers } from "@/data/clubbers";
+import { Heart, RotateCcw, Users, X } from "lucide-react";
+import { clubbers as trialClubbers } from "@/data/clubbers";
+import { events } from "@/data/events";
+import { useEventActivity } from "@/components/social/EventActivityProvider";
 import ClubberCard from "./ClubberCard";
+import ClubberProfileModal from "./ClubberProfileModal";
 import MatchModal from "./MatchModal";
 
-export default function SwipeDeck() {
+export default function SwipeDeck({ onMatch, onMatchChat }) {
+  const { activity } = useEventActivity();
+  const [availableClubbers, setAvailableClubbers] = useState(trialClubbers);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [lastIndex, setLastIndex] = useState(null);
   const [match, setMatch] = useState(null);
+  const [viewingProfile, setViewingProfile] = useState(null);
   const reducedMotion = useReducedMotion();
-  const current = clubbers[index];
+
+  const loadClubbers = useCallback(async () => {
+    try {
+      const response = await fetch("/api/clubbers/discover", {
+        cache: "no-store",
+      });
+      const payload = await response.json();
+      if (!response.ok) return;
+      setAvailableClubbers(payload.clubbers || []);
+      setIndex(0);
+      setLastIndex(null);
+    } catch {
+      // Keep the bundled trial profiles available when the API is offline.
+    }
+  }, []);
+
+  useEffect(() => {
+    loadClubbers();
+    window.addEventListener("scenemates:matches-updated", loadClubbers);
+    return () =>
+      window.removeEventListener("scenemates:matches-updated", loadClubbers);
+  }, [loadClubbers]);
+
+  const orderedClubbers = useMemo(() => {
+    const eventLookup = new Map(events.map((event) => [event.id, event]));
+
+    return availableClubbers
+      .map((clubber) => {
+        const sharedEvents = (clubber.events || []).filter(
+          (entry) => activity[entry.eventId],
+        );
+        const strongestSharedEvent =
+          sharedEvents.find((entry) => entry.status === "going") ||
+          sharedEvents.find((entry) => entry.status === "interested");
+        const sharedEvent = strongestSharedEvent
+          ? eventLookup.get(strongestSharedEvent.eventId)
+          : null;
+
+        return {
+          ...clubber,
+          sharedEvent: sharedEvent?.shortTitle || sharedEvent?.title || null,
+          sharedEventDate: sharedEvent?.date || null,
+          sharedStatus: strongestSharedEvent?.status || null,
+        };
+      })
+      .sort((a, b) => {
+        const priority = { going: 0, interested: 1 };
+        const statusDifference =
+          (priority[a.sharedStatus] ?? 2) - (priority[b.sharedStatus] ?? 2);
+        return statusDifference || b.compatibility - a.compatibility;
+      });
+  }, [activity, availableClubbers]);
+  const current = orderedClubbers[index];
 
   const swipe = useCallback(
     (nextDirection) => {
-      if (!current || match) return;
+      if (!current || match || viewingProfile) return;
       setDirection(nextDirection);
       setLastIndex(index);
-      if (nextDirection > 0 && current.willMatch) setMatch(current);
+      if (nextDirection > 0 && current.willMatch) {
+        onMatch?.(current);
+        setMatch(current);
+      }
       setIndex((value) => value + 1);
     },
-    [current, index, match],
+    [current, index, match, onMatch, viewingProfile],
   );
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape" && match) setMatch(null);
-      if (match) return;
+      if (event.key === "Escape" && viewingProfile) setViewingProfile(null);
+      if (match || viewingProfile) return;
       if (event.key === "ArrowLeft") swipe(-1);
       if (event.key === "ArrowRight") swipe(1);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [match, swipe]);
+  }, [match, swipe, viewingProfile]);
 
   const undo = () => {
     if (lastIndex === null || match) return;
@@ -59,24 +114,7 @@ export default function SwipeDeck() {
 
   return (
     <>
-      <div className="grid w-full gap-8 xl:grid-cols-[280px_minmax(360px,470px)_300px] xl:items-center xl:justify-center xl:gap-10">
-        <aside className="hidden xl:block">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a95bf4]">
-            Your nightlife circle
-          </p>
-          <h1 className="mt-5 text-5xl font-medium leading-[0.9] tracking-[-0.05em] text-white">
-            Find someone on your wavelength.
-          </h1>
-          <p className="mt-6 text-sm leading-7 text-zinc-400">
-            Every profile is connected to an event you both care about. Swipe
-            right to connect or left to keep exploring.
-          </p>
-          <div className="mt-9 space-y-4 font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500">
-            <p>Right arrow / Interested</p>
-            <p>Left arrow / Next profile</p>
-          </div>
-        </aside>
-
+      <div className="flex w-full justify-center">
         <section aria-label="Clubber profiles" className="mx-auto w-full max-w-[470px]">
           <div className="mb-5 flex items-end justify-between px-1">
             <div>
@@ -84,19 +122,19 @@ export default function SwipeDeck() {
                 Clubbers
               </p>
               <p className="mt-2 text-sm text-zinc-400">
-                {current ? `${clubbers.length - index} people nearby` : "You're all caught up"}
+                {current ? `${orderedClubbers.length - index} people nearby` : "You're all caught up"}
               </p>
             </div>
             <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-600">
-              {String(Math.min(index + 1, clubbers.length)).padStart(2, "0")} / {String(clubbers.length).padStart(2, "0")}
+              {String(Math.min(index + 1, orderedClubbers.length)).padStart(2, "0")} / {String(orderedClubbers.length).padStart(2, "0")}
             </p>
           </div>
 
           <div className="relative aspect-[4/5.65] w-full">
-            {clubbers[index + 2] && (
+            {orderedClubbers[index + 2] && (
               <div className="absolute inset-x-6 inset-y-3 rounded-[22px] bg-zinc-900 opacity-45" />
             )}
-            {clubbers[index + 1] && (
+            {orderedClubbers[index + 1] && (
               <div className="absolute inset-x-3 inset-y-1.5 rounded-[22px] bg-zinc-800 opacity-75" />
             )}
 
@@ -120,6 +158,7 @@ export default function SwipeDeck() {
                   <ClubberCard
                     clubber={current}
                     onSwipe={swipe}
+                    onViewProfile={setViewingProfile}
                     reducedMotion={reducedMotion}
                   />
                 </motion.div>
@@ -180,55 +219,20 @@ export default function SwipeDeck() {
           </div>
         </section>
 
-        <aside className="mx-auto w-full max-w-[470px] rounded-[20px] border border-white/10 bg-black/45 p-6 backdrop-blur-sm xl:mx-0 xl:max-w-none">
-          {current ? (
-            <>
-              <div className="flex items-center justify-between">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                  Why you match
-                </p>
-                <p className="text-2xl font-semibold tracking-[-0.04em] text-[#c58aff]">
-                  {current.compatibility}%
-                </p>
-              </div>
-              <div className="mt-7 space-y-7">
-                <div>
-                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-300">
-                    <Music2 size={14} className="text-[#a95bf4]" /> Music
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">
-                    {current.music.join(" · ")}
-                  </p>
-                </div>
-                <div>
-                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-300">
-                    <Users size={14} className="text-[#a95bf4]" /> Nightlife vibe
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">
-                    {current.vibe}
-                  </p>
-                </div>
-                <div>
-                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-300">
-                    <MessageCircle size={14} className="text-[#a95bf4]" /> Interests
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">
-                    {current.interests.join(" · ")}
-                  </p>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="py-10 text-center">
-              <p className="text-sm leading-6 text-zinc-500">
-                Your next recommendations will appear here.
-              </p>
-            </div>
-          )}
-        </aside>
       </div>
 
-      <MatchModal clubber={match} onClose={() => setMatch(null)} />
+      <MatchModal
+        clubber={match}
+        onClose={() => setMatch(null)}
+        onStartChat={(clubber) => {
+          onMatchChat?.(clubber);
+          setMatch(null);
+        }}
+      />
+      <ClubberProfileModal
+        clubber={viewingProfile}
+        onClose={() => setViewingProfile(null)}
+      />
     </>
   );
 }

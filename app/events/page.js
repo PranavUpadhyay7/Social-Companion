@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import FeaturedEvent from "@/components/events/FeaturedEvent";
 import EventGrid from "@/components/events/EventGrid";
 import FilterDrawer from "@/components/events/FilterDrawer";
 import SideRays from "@/components/effects/SideRays";
 import { events } from "@/data/events";
+import { useEventActivity } from "@/components/social/EventActivityProvider";
 
 function filterEvents(filters) {
   const today = new Date();
@@ -43,8 +45,8 @@ function filterEvents(filters) {
       filters.price === "Any Price" ||
       (filters.price === "Free" && price === 0) ||
       (filters.price === "Paid" && price > 0) ||
-      (filters.price === "Under $25" && price <= 25) ||
-      (filters.price === "Under $100" && price <= 100);
+      (filters.price === "Under ₹2,000" && price <= 2000) ||
+      (filters.price === "Under ₹5,000" && price <= 5000);
 
     return (
       matchesDate &&
@@ -63,6 +65,29 @@ export default function Events() {
   });
 
   const filteredEvents = useMemo(() => filterEvents(filters), [filters]);
+  const { authenticated, setEventStatus } = useEventActivity();
+  const handledAction = useRef("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authenticated) return;
+    const params = new URLSearchParams(window.location.search);
+    const eventId = Number(params.get("eventId"));
+    const status = params.get("eventStatus");
+    const actionKey = `${eventId}:${status}`;
+    if (
+      handledAction.current === actionKey ||
+      !Number.isInteger(eventId) ||
+      !["interested", "going"].includes(status)
+    ) {
+      return;
+    }
+
+    handledAction.current = actionKey;
+    setEventStatus(eventId, status, { returnTo: "/events" }).then((result) => {
+      if (result.saved) router.replace("/events#upcoming-events", { scroll: false });
+    });
+  }, [authenticated, router, setEventStatus]);
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-black text-white">

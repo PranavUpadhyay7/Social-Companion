@@ -1,16 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 export default function EventProps({ event }) {
   return (
     <article className="group relative aspect-[3/4] w-[78vw] max-w-[430px] shrink-0 snap-start overflow-hidden bg-zinc-950 sm:w-[43vw] lg:w-[29vw] xl:w-[24vw]">
-      <img
+      <Image
         src={event.image}
         alt={event.title}
+        fill
+        sizes="(min-width: 1280px) 24vw, (min-width: 1024px) 29vw, (min-width: 640px) 43vw, 78vw"
         draggable="false"
-        className="absolute inset-0 h-full w-full select-none object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+        className="select-none object-cover transition-transform duration-700 group-hover:scale-[1.035]"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
 

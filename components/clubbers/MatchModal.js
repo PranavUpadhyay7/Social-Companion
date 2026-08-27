@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, X } from "lucide-react";
+import { MessageCircle, RotateCcw, X } from "lucide-react";
 
-export default function MatchModal({ clubber, onClose }) {
+export default function MatchModal({ clubber, onClose, onStartChat }) {
   return (
     <AnimatePresence>
       {clubber && (
@@ -34,13 +34,13 @@ export default function MatchModal({ clubber, onClose }) {
             </button>
 
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#7626ad]">
-              Mutual interest
+              You both vibed
             </p>
             <h2 className="mt-5 max-w-[380px] text-5xl font-medium leading-[0.88] tracking-[-0.045em] [font-family:var(--font-cormorant)] sm:text-7xl">
-              It&apos;s a match.
+              You vibed.
             </h2>
             <p className="mt-5 max-w-[42ch] text-sm leading-6 text-zinc-600 sm:text-base">
-              You and {clubber.name} are both interested in {clubber.event}.
+              You and {clubber.name} share {clubber.sharedEvent || clubber.event}.
               Start a conversation and make a plan.
             </p>
 
@@ -51,6 +51,7 @@ export default function MatchModal({ clubber, onClose }) {
                   alt={clubber.name}
                   fill
                   sizes="64px"
+                  unoptimized={clubber.image.startsWith("/api/profile/media/")}
                   className="object-cover"
                 />
               </div>
@@ -62,16 +63,23 @@ export default function MatchModal({ clubber, onClose }) {
             <div className="mt-9 grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
-                className="flex h-13 items-center justify-center gap-2 rounded-full bg-black px-5 text-sm font-semibold text-white transition-transform active:scale-[0.98]"
+                onClick={() => onStartChat(clubber)}
+                className="group flex min-h-[58px] cursor-pointer items-center justify-center gap-3 rounded-full border border-[#17131a] bg-[#17131a] px-5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(23,19,26,0.22)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#27202c] hover:shadow-[0_12px_28px_rgba(23,19,26,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7626ad] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f1f5] active:translate-y-0 active:scale-[0.98]"
               >
-                <MessageCircle size={17} /> Send a message
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#a95bf4] text-[#17131a] transition-transform duration-200 group-hover:scale-105">
+                  <MessageCircle size={16} strokeWidth={2} />
+                </span>
+                <span>Send a message</span>
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="h-13 rounded-full border border-black/20 px-5 text-sm font-semibold text-black transition-transform active:scale-[0.98]"
+                className="group flex min-h-[58px] cursor-pointer items-center justify-center gap-3 rounded-full border-2 border-[#17131a]/20 bg-[#fbfafb] px-5 text-sm font-semibold text-[#17131a] shadow-[0_5px_16px_rgba(23,19,26,0.08)] transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-[#7626ad]/55 hover:bg-white hover:shadow-[0_10px_24px_rgba(66,28,87,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7626ad] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f1f5] active:translate-y-0 active:scale-[0.98]"
               >
-                Keep swiping
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-[#17131a] transition-colors duration-200 group-hover:bg-[#ead9f4] group-hover:text-[#7626ad]">
+                  <RotateCcw size={16} strokeWidth={2} />
+                </span>
+                <span>Keep swiping</span>
               </button>
             </div>
           </motion.div>

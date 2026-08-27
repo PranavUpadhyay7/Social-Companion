@@ -1,5 +1,25 @@
 .DS_Store
 node_modules/
 .next/
-package-lock.json
 .superdesign/tmp/
+.env
+.env.local
+.env.*.local
+
+# Private credentials and signing material
+.secrets/
+client_secret*.json
+credentials*.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Do not commit local project backups; they can retain deleted secrets.
+*.zip
+*.tar
+*.tar.gz
+*.tgz

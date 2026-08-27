@@ -20,7 +20,13 @@ export default function FilterDrawer({
     "This Week",
   ];
 
-  const priceOptions = ["Any Price", "Free", "Paid", "Under $25", "Under $100"];
+  const priceOptions = [
+    "Any Price",
+    "Free",
+    "Paid",
+    "Under ₹2,000",
+    "Under ₹5,000",
+  ];
 
   useEffect(() => {
     if (open) setDraftFilters(filters);
@@ -119,7 +125,7 @@ export default function FilterDrawer({
               <p className="text-sm font-semibold text-gray-200">Distance</p>
 
               <span className="text-sm font-semibold text-[#a95bf4]">
-                {draftFilters.distance} miles
+                {draftFilters.distance} km
               </span>
             </div>
 

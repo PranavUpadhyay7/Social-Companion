@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useState } from "react";
 import {
   HomeIcon,
@@ -23,8 +24,11 @@ function FirstDiv() {
               onClick={() => setModalVisibility(false)}
             />
 
-            <img
-              src="/images/5.jpeg"
+            <Image
+              src="/images/1.jpeg"
+              alt="Profile preview"
+              width={80}
+              height={80}
               className="h-20 w-20 mb-4 rounded-full border border-gray-600"
             />
 
