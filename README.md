@@ -34,6 +34,8 @@ Open [http://localhost:3000](http://localhost:3000). Register once on the auth p
 - Auth.js users and minimal Google account linkage
 - SceneMates profile fields and private GridFS media
 - Vibed With records, conversations and messages
+- Persistent groups, memberships and trusted event-attendance choices
+- Confirmed-attendee event rooms whose messages expire 48 hours after the event date
 
 Google passwords are never available to SceneMates. Provider access, refresh and ID tokens are removed before an account record is stored. Browser sessions use signed, HTTP-only cookies, and API authorization is derived from the server session rather than a user ID supplied by the client.
 
@@ -49,7 +51,13 @@ Google passwords are never available to SceneMates. Provider access, refresh and
 Run the project checks with:
 
 ```bash
-npm run lint
-npm run build
-npm audit --omit=dev
+npm run check
 ```
+
+Demo profiles and sample conversations are disabled by default. Set
+`ENABLE_DEMO_DATA=true` only for an explicit local showcase; never enable it in
+production.
+
+“Going” is not a self-declared state. It is accepted only when the authenticated
+member has a paid ticket or a confirmed guest-list entry. Event-community access
+uses the same server-side rule.

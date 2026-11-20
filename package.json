@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/clean-next.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run security:secrets && npm run test && npm run lint && npm run build",
     "security:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {

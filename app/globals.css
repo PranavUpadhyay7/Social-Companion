@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
+:root {
+  --font-geist-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-manrope: "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+  --font-cormorant: Iowan Old Style, Baskerville, "Times New Roman", serif;
+}
+
 body{
 background-color:black;
+font-family: var(--font-geist-sans);
 }
 
 .glass-button-wrap {

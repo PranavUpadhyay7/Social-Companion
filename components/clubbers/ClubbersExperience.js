@@ -42,7 +42,7 @@ export default function ClubbersExperience() {
     return () => window.clearInterval(interval);
   }, [activeView, loadChats]);
 
-  const saveVibe = useCallback(async (clubber) => {
+  const saveSwipe = useCallback(async (clubber, decision = "like") => {
     try {
       const response = await fetch("/api/matches", {
         method: "POST",
@@ -50,11 +50,12 @@ export default function ClubbersExperience() {
         body: JSON.stringify({
           profileId: clubber.id,
           eventName: clubber.sharedEvent || clubber.event,
+          decision,
         }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Could not save this vibe.");
-      if (!payload.conversation) return null;
+      if (!payload.matched || !payload.conversation) return null;
 
       setChats((current) => {
         const withoutExisting = current.filter(
@@ -69,6 +70,16 @@ export default function ClubbersExperience() {
       return null;
     }
   }, []);
+
+  const saveVibe = useCallback(
+    (clubber) => saveSwipe(clubber, "like"),
+    [saveSwipe],
+  );
+
+  const savePass = useCallback(
+    (clubber) => saveSwipe(clubber, "pass"),
+    [saveSwipe],
+  );
 
   const openVibeChat = useCallback(async (clubber) => {
     const conversation =
@@ -163,7 +174,7 @@ export default function ClubbersExperience() {
       </aside>
       {activeView === "discover" && (
         <div className="mx-auto w-full max-w-[470px]">
-          <SwipeDeck onMatch={saveVibe} onMatchChat={openVibeChat} />
+          <SwipeDeck onMatch={saveVibe} onPass={savePass} onMatchChat={openVibeChat} />
         </div>
       )}
       {chatState.error && activeView === "discover" && (

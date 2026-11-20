@@ -33,12 +33,15 @@ export async function GET(request, { params }) {
   const conversation = await getConversation(conversationId, user.id);
   if (!conversation) return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
 
-  const messages = await Message.find({ conversationId: conversation._id })
-    .sort({ createdAt: 1 })
-    .limit(100)
+  const before = new URL(request.url).searchParams.get("before");
+  const filter = { conversationId: conversation._id };
+  if (before && mongoose.isValidObjectId(before)) filter._id = { $lt: before };
+  const messages = await Message.find(filter)
+    .sort({ _id: -1 })
+    .limit(50)
     .lean();
   return NextResponse.json({
-    messages: messages.map((message) => ({
+    messages: messages.reverse().map((message) => ({
       id: message._id.toString(),
       from: message.senderProfileId === user.id ? "me" : "them",
       text: message.body,

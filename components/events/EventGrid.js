@@ -1,9 +1,9 @@
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
+import { Plus, SlidersHorizontal } from "lucide-react";
 import EventCard from "./EventCard";
 
-export default function EventGrid({ events, onFilterClick }) {
+export default function EventGrid({ events, onFilterClick, onCreateClick }) {
   const priority = ["Night Signal", "After Dark", "Rooftop Sessions"];
   const orderedEvents = [...events].sort((a, b) => {
     const aIndex = priority.indexOf(a.shortTitle);
@@ -25,14 +25,24 @@ export default function EventGrid({ events, onFilterClick }) {
         <h2 className="font-mono text-xl uppercase tracking-[0.2em] text-white sm:text-3xl lg:text-[32px]">
           Upcoming Events
         </h2>
-        <button
-          type="button"
-          onClick={onFilterClick}
-          className="flex h-11 shrink-0 items-center gap-2.5 border border-zinc-700 bg-black/60 px-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-200 transition hover:border-[#a95bf4] hover:text-white sm:px-5 sm:text-xs"
-        >
-          <SlidersHorizontal size={15} className="text-[#a95bf4]" />
-          <span className="hidden sm:inline">Filters</span>
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={onCreateClick}
+            className="flex h-11 items-center gap-2.5 border border-white/20 bg-white px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-black transition hover:border-[#c58aff] hover:bg-[#c58aff] active:scale-[0.98] sm:px-5 sm:text-xs"
+          >
+            <Plus size={15} />
+            <span className="hidden sm:inline">List event</span>
+          </button>
+          <button
+            type="button"
+            onClick={onFilterClick}
+            className="flex h-11 items-center gap-2.5 border border-zinc-700 bg-black/60 px-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-200 transition hover:border-[#a95bf4] hover:text-white active:scale-[0.98] sm:px-5 sm:text-xs"
+          >
+            <SlidersHorizontal size={15} className="text-[#a95bf4]" />
+            <span className="hidden sm:inline">Filters</span>
+          </button>
+        </div>
       </div>
       {events.length ? (
         <>

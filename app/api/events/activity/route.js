@@ -9,6 +9,8 @@ import {
 import { getAuthenticatedProfile } from "@/lib/profile";
 import { getSessionUser } from "@/lib/session";
 import { logServerError } from "@/lib/securityLog";
+import Event from "@/models/Event";
+import GuestEntry from "@/models/GuestEntry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,7 +55,7 @@ export async function PATCH(request) {
     const body = await request.json();
     const eventId = Number(body.eventId);
     const status = body.status;
-    if (!Number.isInteger(eventId) || !events.some((event) => event.id === eventId)) {
+    if (!Number.isSafeInteger(eventId) || eventId <= 0) {
       return NextResponse.json({ error: "Choose a valid event." }, { status: 400 });
     }
     if (!new Set(["interested", "going"]).has(status)) {
@@ -61,6 +63,33 @@ export async function PATCH(request) {
     }
 
     await connectMongo();
+    const isBundledEvent = events.some((event) => event.id === eventId);
+    const isUploadedEvent = isBundledEvent
+      ? false
+      : Boolean(await Event.exists({ eventId, status: { $in: ["Published", "published"] } }));
+    if (!isBundledEvent && !isUploadedEvent) {
+      return NextResponse.json({ error: "Choose a valid event." }, { status: 400 });
+    }
+
+    // "Going" is a trusted attendance state. A browser click must never be
+    // able to impersonate a completed booking or an approved guest pass.
+    if (status === "going") {
+      const confirmedEntry = await GuestEntry.exists({
+        eventId,
+        userProfileId: String(user.id),
+        $or: [
+          { paymentStatus: "Paid" },
+          { status: { $in: ["Confirmed", "Checked In"] } },
+        ],
+      });
+      if (!confirmedEntry) {
+        return NextResponse.json(
+          { error: "Going unlocks after your ticket or guest-list place is confirmed." },
+          { status: 409 },
+        );
+      }
+    }
+
     const profile = await getAuthenticatedProfile(user);
     profile.events = (profile.events || []).filter((entry) => entry.eventId !== eventId);
     profile.events.push({ eventId, status });

@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 const initialForm = {
   name: "",
   event: "",
+  city: "Mumbai",
   vibe: "House",
   capacity: "8",
   description: "",
@@ -21,11 +22,11 @@ export default function CreateGroupModal({ open, onClose, onCreate }) {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     if (!form.name.trim() || !form.event.trim()) return;
-    onCreate(form);
-    setForm(initialForm);
+    const created = await onCreate(form);
+    if (created !== false) setForm(initialForm);
   };
 
   return (
@@ -104,6 +105,12 @@ export default function CreateGroupModal({ open, onClose, onCreate }) {
                   <option>Live music</option>
                   <option>Open air</option>
                   <option>Chill</option>
+                </select>
+              </label>
+              <label>
+                <span className="text-xs font-semibold text-zinc-700">City</span>
+                <select name="city" value={form.city} onChange={update} className="mt-2 h-12 w-full rounded-[10px] bg-white px-4 text-sm text-black outline-none ring-1 ring-black/10 transition focus:ring-2 focus:ring-[#7626ad]">
+                  {["Mumbai", "Delhi NCR", "Bengaluru", "Goa", "Pune", "Hyderabad", "Kolkata", "Chennai"].map((city) => <option key={city}>{city}</option>)}
                 </select>
               </label>
               <label>

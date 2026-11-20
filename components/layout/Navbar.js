@@ -140,6 +140,20 @@ export default function Navbar({ user = null }) {
               >
                 Clubbers profile
               </Link>
+              <Link
+                href="/promoter"
+                onClick={() => setAccountOpen(false)}
+                className="block rounded-lg px-3 py-2.5 text-xs text-zinc-300 transition hover:bg-white/[0.05] hover:text-white"
+              >
+                Promoter studio
+              </Link>
+              <Link
+                href="/door"
+                onClick={() => setAccountOpen(false)}
+                className="block rounded-lg px-3 py-2.5 text-xs text-zinc-300 transition hover:bg-white/[0.05] hover:text-white"
+              >
+                Door check-in
+              </Link>
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}

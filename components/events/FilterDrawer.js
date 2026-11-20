@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { eventCities } from "@/data/events";
 
 export default function FilterDrawer({
   open,
@@ -27,6 +28,7 @@ export default function FilterDrawer({
     "Under ₹2,000",
     "Under ₹5,000",
   ];
+  const cityOptions = ["All Cities", ...eventCities];
 
   useEffect(() => {
     if (open) setDraftFilters(filters);
@@ -37,7 +39,7 @@ export default function FilterDrawer({
   if (!open) return null;
 
   const clearFilters = () => {
-    const cleared = { date: "Anytime", price: "Any Price", distance: 50 };
+    const cleared = { city: "All Cities", date: "Anytime", price: "Any Price", distance: 50 };
     setDraftFilters(cleared);
     onApply(cleared);
   };
@@ -77,8 +79,28 @@ export default function FilterDrawer({
 
         {/* BODY */}
         <div className="flex-1 overflow-y-auto px-5 py-7 sm:px-7 sm:py-8">
-          {/* DATE */}
           <div>
+            <p className="mb-4 text-sm font-semibold text-gray-200">City</p>
+            <div className="grid grid-cols-2 gap-2">
+              {cityOptions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => updateFilter("city", item)}
+                  className={`min-h-11 border px-3 py-2.5 text-left font-mono text-[10px] uppercase tracking-[0.1em] transition ${
+                    draftFilters.city === item
+                      ? "border-white bg-white text-black shadow-[0_0_10px_#a95bf4]"
+                      : "border-zinc-800 text-gray-400 hover:border-zinc-600 hover:text-white"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* DATE */}
+          <div className="mt-11">
             <p className="mb-4 text-sm font-semibold text-gray-200">Date</p>
 
             <div className="flex flex-wrap gap-2">

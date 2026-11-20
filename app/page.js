@@ -1,5 +1,6 @@
 import CrazyEvents from "@/components/home/CrazyEvents";
 import Front from "@/components/home/Front";
+import ForPromoters from "@/components/home/ForPromoters";
 import HowItWorks from "@/components/home/HowItWorks";
 import HoverFeaturedEvents from "@/components/home/HoverFeaturedEvents";
 import NightCoverflow from "@/components/home/NightCoverflow";
@@ -21,20 +22,21 @@ export default function Home() {
         {/* Top Right */}
         <SideRays
           origin="top-right"
-          speed={2.5}
+          speed={1.5}
           rayColor1="#ffffff"
           rayColor2="#a95bf4"
-          intensity={2.5}
-          spread={1.2}
-          tilt={-35}
+          intensity={2}
+          spread={0.2}
+          tilt={10}
           saturation={1.5}
-          blend={0.75}
-          falloff={0.5}
+          blend={0.7}
+          falloff={1}
           opacity={1}
         />
       </div>
       {/* Foreground Content */}
       <Front />
+      <ForPromoters />
       <HowItWorks />
       <NightCoverflow />
       <HoverFeaturedEvents />

@@ -3,16 +3,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Heart, RotateCcw, Users, X } from "lucide-react";
-import { clubbers as trialClubbers } from "@/data/clubbers";
 import { events } from "@/data/events";
 import { useEventActivity } from "@/components/social/EventActivityProvider";
 import ClubberCard from "./ClubberCard";
 import ClubberProfileModal from "./ClubberProfileModal";
 import MatchModal from "./MatchModal";
 
-export default function SwipeDeck({ onMatch, onMatchChat }) {
+export default function SwipeDeck({ onMatch, onPass, onMatchChat }) {
   const { activity } = useEventActivity();
-  const [availableClubbers, setAvailableClubbers] = useState(trialClubbers);
+  const [availableClubbers, setAvailableClubbers] = useState([]);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [lastIndex, setLastIndex] = useState(null);
@@ -31,7 +30,7 @@ export default function SwipeDeck({ onMatch, onMatchChat }) {
       setIndex(0);
       setLastIndex(null);
     } catch {
-      // Keep the bundled trial profiles available when the API is offline.
+      setAvailableClubbers([]);
     }
   }, []);
 
@@ -74,17 +73,19 @@ export default function SwipeDeck({ onMatch, onMatchChat }) {
   const current = orderedClubbers[index];
 
   const swipe = useCallback(
-    (nextDirection) => {
+    async (nextDirection) => {
       if (!current || match || viewingProfile) return;
       setDirection(nextDirection);
       setLastIndex(index);
-      if (nextDirection > 0 && current.willMatch) {
-        onMatch?.(current);
-        setMatch(current);
-      }
       setIndex((value) => value + 1);
+      if (nextDirection > 0) {
+        const conversation = await onMatch?.(current);
+        if (conversation) setMatch(current);
+      } else {
+        await onPass?.(current);
+      }
     },
-    [current, index, match, onMatch, viewingProfile],
+    [current, index, match, onMatch, onPass, viewingProfile],
   );
 
   useEffect(() => {
@@ -110,6 +111,13 @@ export default function SwipeDeck({ onMatch, onMatchChat }) {
     setIndex(0);
     setLastIndex(null);
     setMatch(null);
+  };
+
+  const blockProfile = async (clubber) => {
+    const response = await fetch("/api/blocks", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ profileId: clubber.id }) });
+    if (!response.ok) return;
+    setViewingProfile(null);
+    await loadClubbers();
   };
 
   return (
@@ -232,6 +240,7 @@ export default function SwipeDeck({ onMatch, onMatchChat }) {
       <ClubberProfileModal
         clubber={viewingProfile}
         onClose={() => setViewingProfile(null)}
+        onBlock={blockProfile}
       />
     </>
   );

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { googleConfigured, previewAuthEnabled } from "@/auth";
-import SideRays from "@/components/effects/SideRays";
 import { getSessionUser } from "@/lib/session";
 import {
   continueLocalPreview,
@@ -35,21 +34,6 @@ export default async function AuthPage({ searchParams }) {
 
   return (
     <main className="relative flex min-h-[calc(100dvh-5rem)] items-center overflow-hidden px-5 py-10 text-white sm:px-8 lg:px-10">
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <SideRays
-          origin="top-right"
-          speed={2.2}
-          rayColor1="#ffffff"
-          rayColor2="#a95bf4"
-          intensity={2.2}
-          spread={1.1}
-          tilt={-32}
-          saturation={1.35}
-          blend={0.72}
-          falloff={0.55}
-          opacity={0.9}
-        />
-      </div>
 
       <section className="mx-auto grid w-full max-w-[1180px] items-end gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
         <div className="pb-2">

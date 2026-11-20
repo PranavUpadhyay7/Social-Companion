@@ -6,6 +6,8 @@ import { enforceRateLimit } from "@/lib/apiSecurity";
 import { seedTrialData } from "@/lib/chat";
 import { getSessionUser } from "@/lib/session";
 import Match from "@/models/Match";
+import Swipe from "@/models/Swipe";
+import Block from "@/models/Block";
 import Profile from "@/models/Profile";
 import { logServerError } from "@/lib/securityLog";
 
@@ -40,12 +42,20 @@ export async function GET(request) {
   try {
     await connectMongo();
     await seedTrialData(user);
-    const existingMatches = await Match.find({ userProfileId: user.id })
-      .select({ vibedProfileId: 1 })
-      .lean();
+    const [existingMatches, priorSwipes, blocks] = await Promise.all([
+      Match.find({ $or: [{ userProfileId: user.id }, { vibedProfileId: user.id }] })
+      .select({ userProfileId: 1, vibedProfileId: 1 })
+      .lean(),
+      Swipe.find({ fromProfileId: user.id }).select({ toProfileId: 1 }).lean(),
+      Block.find({ $or: [{ blockerProfileId: user.id }, { blockedProfileId: user.id }] }).select("blockerProfileId blockedProfileId").lean(),
+    ]);
     const excludedIds = [
       String(user.id),
-      ...existingMatches.map((match) => match.vibedProfileId),
+      ...existingMatches.map((match) =>
+        match.userProfileId === String(user.id) ? match.vibedProfileId : match.userProfileId,
+      ),
+      ...priorSwipes.map((swipe) => swipe.toProfileId),
+      ...blocks.map((block) => block.blockerProfileId === String(user.id) ? block.blockedProfileId : block.blockerProfileId),
     ];
     const profiles = await Profile.find({ profileId: { $nin: excludedIds } })
       .select({

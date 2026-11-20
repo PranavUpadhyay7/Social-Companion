@@ -16,6 +16,7 @@ import {
 } from "@/lib/profileMedia";
 import { getSessionUser } from "@/lib/session";
 import { logServerError } from "@/lib/securityLog";
+import { validProfileMediaMix } from "@/lib/domainRules.mjs";
 
 export const runtime = "nodejs";
 
@@ -70,11 +71,9 @@ export async function POST(request) {
     const media = profile.media || [];
     const photoCount = media.filter((item) => item.type === "image").length;
     const videoCount = media.filter((item) => item.type === "video").length;
-    if (
-      media.length >= 5 ||
-      (isVideo && (videoCount >= 2 || photoCount > 3)) ||
-      (isImage && videoCount > 0 && photoCount >= 3)
-    ) {
+    const nextPhotoCount = photoCount + (isImage ? 1 : 0);
+    const nextVideoCount = videoCount + (isVideo ? 1 : 0);
+    if (!validProfileMediaMix(nextPhotoCount, nextVideoCount)) {
       return NextResponse.json(
         { error: "Use up to 5 photos, or combine up to 3 photos with 2 videos." },
         { status: 400 },

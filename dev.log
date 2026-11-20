@@ -1,0 +1,102 @@
+
+> night_link@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.24
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.101:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1427ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.1s (1799 modules)
+ GET / 200 in 2707ms
+ ○ Compiling /groups ...
+ ✓ Compiled /groups in 629ms (1855 modules)
+ GET /groups 200 in 766ms
+ ○ Compiling /api/groups ...
+ ✓ Compiled /api/groups in 844ms (1878 modules)
+ GET /api/groups 200 in 2318ms
+ GET /api/groups 200 in 2056ms
+ GET /api/events 200 in 2409ms
+ GET /api/events 200 in 2287ms
+ ✓ Compiled /clubbers in 453ms (1948 modules)
+ GET /clubbers 200 in 562ms
+ ○ Compiling /auth ...
+ ✓ Compiled /auth in 1388ms (1958 modules)
+ GET /auth?callbackUrl=%2Fclubbers 200 in 1641ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 33ms
+ ✓ Compiled /events in 482ms (1995 modules)
+ GET /events 200 in 581ms
+ GET /api/events 200 in 77ms
+ GET /api/events 200 in 52ms
+ GET /clubbers 200 in 97ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 46ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 28ms
+ ✓ Compiled in 2.5s (1959 modules)
+ GET /auth?callbackUrl=%2Fclubbers 200 in 253ms
+ ○ Compiling / ...
+ ✓ Compiled / in 802ms (1155 modules)
+ GET / 200 in 1498ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 676ms
+ GET / 200 in 281ms
+ GET / 200 in 94ms
+ GET /clubbers 200 in 85ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 73ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 35ms
+ GET /events 200 in 60ms
+ ○ Compiling /api/events ...
+ ✓ Compiled /api/events in 538ms (1172 modules)
+ GET /api/events 200 in 889ms
+ GET /api/events 200 in 890ms
+ GET /groups 200 in 92ms
+ GET /api/events 200 in 40ms
+ ✓ Compiled /api/groups in 206ms (1175 modules)
+ GET /api/events 200 in 440ms
+ GET /api/groups 200 in 457ms
+ GET /api/groups 200 in 461ms
+ GET /clubbers 200 in 61ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 33ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 24ms
+ GET /events 200 in 50ms
+ GET /api/events 200 in 52ms
+ GET /api/events 200 in 61ms
+ GET /clubbers 200 in 55ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 30ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 21ms
+ GET /events 200 in 24ms
+ GET /api/events 200 in 60ms
+ GET /api/events 200 in 69ms
+ GET / 200 in 46ms
+ ✓ Compiled in 1384ms (2009 modules)
+ GET / 200 in 110ms
+ GET / 200 in 395ms
+ GET /auth 200 in 53ms
+ GET /events 200 in 88ms
+ GET /groups 200 in 104ms
+ ○ Compiling /promoter ...
+ ✓ Compiled /promoter in 861ms (2005 modules)
+ GET /promoter 200 in 1145ms
+ ✓ Compiled /door in 443ms (2019 modules)
+ GET /door 200 in 566ms
+ GET /clubbers 307 in 66ms
+ ✓ Compiled /passes/[passId] in 344ms (2031 modules)
+ GET /passes/test 200 in 1415ms
+ GET /clubbers 200 in 916ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 133ms
+ GET /auth?callbackUrl=%2Fclubbers 200 in 67ms
+ GET /events 200 in 111ms
+ GET /api/events 200 in 251ms
+ GET /api/events 200 in 246ms
+ GET /groups 200 in 104ms
+ GET /api/events 200 in 91ms
+ GET /api/groups 200 in 111ms
+ GET /api/groups 200 in 111ms
+ GET /api/events 200 in 116ms
+ GET /events 200 in 104ms
+ GET /api/events 200 in 64ms
+ GET /api/events 200 in 67ms
+ GET / 200 in 115ms
+ ✓ Compiled in 2.6s (2021 modules)
+ GET / 200 in 242ms

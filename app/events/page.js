@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import FeaturedEvent from "@/components/events/FeaturedEvent";
 import EventGrid from "@/components/events/EventGrid";
 import FilterDrawer from "@/components/events/FilterDrawer";
-import SideRays from "@/components/effects/SideRays";
+import CreateEventModal from "@/components/events/CreateEventModal";
 import { events } from "@/data/events";
 import { useEventActivity } from "@/components/social/EventActivityProvider";
 
-function filterEvents(filters) {
+function filterEvents(eventsToFilter, filters) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -25,7 +25,7 @@ function filterEvents(filters) {
   const weekendEnd = new Date(weekendStart);
   weekendEnd.setDate(weekendStart.getDate() + 1);
 
-  return events.filter((event) => {
+  return eventsToFilter.filter((event) => {
     const eventDate = new Date(`${event.dateISO}T00:00:00`);
     const price = Number(event.price.replace(/[^0-9.]/g, "")) || 0;
 
@@ -48,7 +48,12 @@ function filterEvents(filters) {
       (filters.price === "Under ₹2,000" && price <= 2000) ||
       (filters.price === "Under ₹5,000" && price <= 5000);
 
+    const matchesCity =
+      filters.city === "All Cities" ||
+      (event.city || "Mumbai") === filters.city;
+
     return (
+      matchesCity &&
       matchesDate &&
       matchesPrice &&
       event.distance <= Number(filters.distance)
@@ -58,16 +63,39 @@ function filterEvents(filters) {
 
 export default function Events() {
   const [filterOpen, setFilterOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [uploadedEvents, setUploadedEvents] = useState([]);
   const [filters, setFilters] = useState({
+    city: "All Cities",
     date: "Anytime",
     price: "Any Price",
     distance: 50,
   });
 
-  const filteredEvents = useMemo(() => filterEvents(filters), [filters]);
+  const allEvents = useMemo(
+    () => [...events, ...uploadedEvents],
+    [uploadedEvents],
+  );
+  const filteredEvents = useMemo(
+    () => filterEvents(allEvents, filters),
+    [allEvents, filters],
+  );
   const { authenticated, setEventStatus } = useEventActivity();
   const handledAction = useRef("");
   const router = useRouter();
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/events", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (response.ok && active) setUploadedEvents(payload.events || []);
+      })
+      .catch(() => null);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!authenticated) return;
@@ -89,29 +117,29 @@ export default function Events() {
     });
   }, [authenticated, router, setEventStatus]);
 
+  useEffect(() => {
+    if (!authenticated) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("createEvent") === "1") setCreateOpen(true);
+  }, [authenticated]);
+
+  const openCreateEvent = () => {
+    if (!authenticated) {
+      router.push(`/auth?callbackUrl=${encodeURIComponent("/events?createEvent=1")}`);
+      return;
+    }
+    setCreateOpen(true);
+  };
+
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-black text-white">
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        <SideRays
-          origin="top-right"
-          speed={2.5}
-          rayColor1="#ffffff"
-          rayColor2="#a95bf4"
-          intensity={2.5}
-          spread={1.2}
-          tilt={-35}
-          saturation={1.5}
-          blend={0.75}
-          falloff={0.5}
-          opacity={1}
-        />
-      </div>
 
       <div className="relative z-10">
         <FeaturedEvent />
         <EventGrid
           events={filteredEvents}
           onFilterClick={() => setFilterOpen(true)}
+          onCreateClick={openCreateEvent}
         />
       </div>
       <FilterDrawer
@@ -119,7 +147,18 @@ export default function Events() {
         onClose={() => setFilterOpen(false)}
         filters={filters}
         onApply={setFilters}
-        getResultCount={(draftFilters) => filterEvents(draftFilters).length}
+        getResultCount={(draftFilters) => filterEvents(allEvents, draftFilters).length}
+      />
+      <CreateEventModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={(event) => {
+          if (["Published", "published"].includes(event.status)) {
+            setUploadedEvents((current) => [event, ...current]);
+          } else {
+            router.push("/promoter");
+          }
+        }}
       />
     </main>
   );

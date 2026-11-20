@@ -11,6 +11,7 @@ import Conversation from "@/models/Conversation";
 import Match from "@/models/Match";
 import Message from "@/models/Message";
 import Profile from "@/models/Profile";
+import Swipe from "@/models/Swipe";
 import { logServerError } from "@/lib/securityLog";
 
 export const runtime = "nodejs";
@@ -32,14 +33,32 @@ export async function POST(request) {
     const body = await request.json();
     const profileId = String(body.profileId || "");
     const eventName = String(body.eventName || "").trim().slice(0, 140);
+    const decision = body.decision === "pass" ? "pass" : "like";
     if (!/^[a-zA-Z0-9_-]{1,120}$/.test(profileId) || !eventName) {
       return NextResponse.json({ error: "A valid profile and event are required." }, { status: 400 });
     }
 
     await connectMongo();
     await seedTrialData(user);
-    if (!(await Profile.exists({ profileId, isCurrentUser: false }))) {
+    if (profileId === String(user.id) || !(await Profile.exists({ profileId }))) {
       return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+    }
+
+    await Swipe.findOneAndUpdate(
+      { fromProfileId: user.id, toProfileId: profileId },
+      { decision, eventName },
+      { upsert: true, returnDocument: "after" },
+    );
+    if (decision === "pass") {
+      return NextResponse.json({ matched: false }, { status: 202 });
+    }
+    const reciprocal = await Swipe.exists({
+      fromProfileId: profileId,
+      toProfileId: user.id,
+      decision: "like",
+    });
+    if (!reciprocal) {
+      return NextResponse.json({ matched: false }, { status: 202 });
     }
 
     const match = await Match.findOneAndUpdate(
@@ -61,7 +80,7 @@ export async function POST(request) {
 
     const conversations = await serializeConversations(user.id);
     return NextResponse.json(
-      { conversation: conversations.find((item) => item.profileId === profileId) },
+      { matched: true, conversation: conversations.find((item) => item.profileId === profileId) },
       { status: 201 },
     );
   } catch (error) {
@@ -95,8 +114,10 @@ export async function DELETE(request) {
     // it does not cause the demo bootstrap to recreate the connection.
     await seedTrialData(user);
     const match = await Match.findOne({
-      userProfileId: user.id,
-      vibedProfileId: profileId,
+      $or: [
+        { userProfileId: user.id, vibedProfileId: profileId },
+        { userProfileId: profileId, vibedProfileId: user.id },
+      ],
     });
     if (!match) {
       return NextResponse.json({ error: "This vibe no longer exists." }, { status: 404 });
@@ -110,7 +131,13 @@ export async function DELETE(request) {
       await Message.deleteMany({ conversationId: { $in: conversationIds } });
       await Conversation.deleteMany({ _id: { $in: conversationIds } });
     }
-    await Match.deleteOne({ _id: match._id, userProfileId: user.id });
+    await Match.deleteOne({ _id: match._id });
+    await Swipe.deleteMany({
+      $or: [
+        { fromProfileId: user.id, toProfileId: profileId },
+        { fromProfileId: profileId, toProfileId: user.id },
+      ],
+    });
 
     return NextResponse.json({
       ok: true,

@@ -2,30 +2,33 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CheckCircle2, Heart, UserRound, X } from "lucide-react";
-import { clubbers } from "@/data/clubbers";
+import { AtSign, CheckCircle2, Heart, UserRound, X } from "lucide-react";
 import { useEventActivity } from "@/components/social/EventActivityProvider";
+import ReportDialog from "./ReportDialog";
 
 export default function EventCard({ event }) {
   const [openList, setOpenList] = useState(null);
+  const [people, setPeople] = useState({ interested: [], going: [] });
+  const [peopleLoading, setPeopleLoading] = useState(false);
   const { activity, setEventStatus, pendingEventId, error } = useEventActivity();
   const userStatus = activity[event.id];
   const saving = pendingEventId === event.id;
-  const interested = clubbers.filter((clubber) =>
-    clubber.events?.some(
-      (entry) =>
-        entry.eventId === event.id && entry.status === "interested",
-    ),
-  );
-  const going = clubbers.filter((clubber) =>
-    clubber.events?.some(
-      (entry) => entry.eventId === event.id && entry.status === "going",
-    ),
-  );
+  const interested = people.interested;
+  const going = people.going;
   const visiblePeople = openList === "going" ? going : interested;
 
-  const openAttendees = (status) => {
+  const openAttendees = async (status) => {
     setOpenList((current) => (current === status ? null : status));
+    if (openList === status) return;
+    setPeopleLoading(true);
+    try {
+      const response = await fetch(`/api/events/${event.id}/attendees`, { cache: "no-store" });
+      if (response.status === 401) return;
+      const payload = await response.json();
+      if (response.ok) setPeople({ interested: payload.interested || [], going: payload.going || [] });
+    } finally {
+      setPeopleLoading(false);
+    }
   };
 
   return (
@@ -36,12 +39,22 @@ export default function EventCard({ event }) {
         fill
         sizes="(min-width: 1280px) 32vw, (min-width: 640px) 50vw, 100vw"
         className="object-cover transition duration-700 ease-out group-hover:scale-[1.035]"
+        unoptimized={event.image.startsWith("/api/events/media/")}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
+      {event.promoter && (
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-gradient-to-b from-black/85 to-transparent px-5 pb-8 pt-4 text-[10px] text-zinc-300 sm:px-6">
+          <a href={event.promoter.instagram} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1.5 truncate transition hover:text-[#d9b7ff]">
+            <AtSign size={13} className="shrink-0" />
+            <span className="truncate">{event.promoter.displayName}</span>
+          </a>
+          <span className="shrink-0">{event.promoter.completedEventCount} hosted · {Number(event.promoter.totalAttendees || 0).toLocaleString("en-IN")} attended</span>
+        </div>
+      )}
       <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
         <div className="min-w-0 font-mono uppercase">
           <p className="text-[11px] tracking-[0.16em] text-zinc-200">
-            {event.date}
+            {event.date} · {event.city || "Mumbai"}
           </p>
           <h3 className="mt-2 truncate text-lg tracking-[0.16em] text-white sm:text-xl">
             {event.shortTitle || event.title}
@@ -75,6 +88,7 @@ export default function EventCard({ event }) {
             Going · {going.length + (userStatus === "going" ? 1 : 0)}
           </button>
         </div>
+        {(event.uploaded || event.venueConfirmed) && <div className="mt-3 flex items-center justify-between gap-3 text-[10px]"><span className={event.venueConfirmed ? "text-[#d9b7ff]" : "text-zinc-500"}>{event.venueConfirmed ? "Venue Confirmed" : "Venue confirmation pending"}</span><ReportDialog event={event} /></div>}
       </div>
 
       {openList && (
@@ -99,7 +113,9 @@ export default function EventCard({ event }) {
           </div>
 
           <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
-            {visiblePeople.length ? (
+            {peopleLoading ? (
+              <p className="py-8 text-sm text-zinc-500">Loading people…</p>
+            ) : visiblePeople.length ? (
               <div className="space-y-2">
                 {visiblePeople.map((person) => (
                   <div
@@ -142,7 +158,7 @@ export default function EventCard({ event }) {
               : userStatus === openList
               ? `Your status: ${openList === "going" ? "Going" : "Interested"}`
               : openList === "going"
-                ? "Set as going"
+                ? "Confirm through booking"
                 : "I'm interested"}
           </button>
           {error && (

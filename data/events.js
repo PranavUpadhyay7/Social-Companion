@@ -145,3 +145,14 @@ export const events = [
 ];
 
 export const categories = ["All", "Music", "Nightlife", "Food", "Comedy"];
+
+export const eventCities = [
+  "Mumbai",
+  "Delhi NCR",
+  "Bengaluru",
+  "Goa",
+  "Pune",
+  "Hyderabad",
+  "Kolkata",
+  "Chennai",
+];

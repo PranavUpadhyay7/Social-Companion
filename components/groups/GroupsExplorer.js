@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { CalendarDays, Check, MapPin, Plus, Search, Users } from "lucide-react";
 import { groups as initialGroups, groupVibes } from "@/data/groups";
 import GroupCard from "./GroupCard";
 import CreateGroupModal from "./CreateGroupModal";
+import GuestListWorkspace from "./GuestListWorkspace";
+import PublicGuestRequest from "./PublicGuestRequest";
+import EventChatWorkspace from "./EventChatWorkspace";
 
 export default function GroupsExplorer() {
   const [groups, setGroups] = useState(initialGroups);
@@ -16,6 +19,22 @@ export default function GroupsExplorer() {
   const [vibe, setVibe] = useState("All");
   const [view, setView] = useState("discover");
   const [createOpen, setCreateOpen] = useState(false);
+  const [groupError, setGroupError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/groups", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Groups could not be loaded.");
+        const persisted = payload.groups || [];
+        setGroups([...persisted, ...initialGroups]);
+        setJoinedIds((current) => new Set([
+          ...current,
+          ...persisted.filter((group) => group.joined).map((group) => group.id),
+        ]));
+      })
+      .catch((error) => setGroupError(error.message));
+  }, []);
 
   const filteredGroups = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -35,7 +54,22 @@ export default function GroupsExplorer() {
   const featured = groups[0];
   const featuredJoined = joinedIds.has(featured.id);
 
-  const toggleJoin = (groupId) => {
+  const toggleJoin = async (groupId) => {
+    const group = groups.find((item) => item.id === groupId);
+    const currentlyJoined = joinedIds.has(groupId);
+    if (group?.persisted) {
+      const response = await fetch("/api/groups", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ groupId, action: currentlyJoined ? "leave" : "join" }),
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        setGroupError(payload.error || "Group membership could not be updated.");
+        return;
+      }
+      setGroups((current) => current.map((item) => item.id === groupId ? payload.group : item));
+    }
     setJoinedIds((current) => {
       const next = new Set(current);
       if (next.has(groupId)) next.delete(groupId);
@@ -44,27 +78,14 @@ export default function GroupsExplorer() {
     });
   };
 
-  const createGroup = (form) => {
-    const newGroup = {
-      id: Date.now(),
-      name: form.name.trim(),
-      event: form.event.trim(),
-      date: "NEW",
-      venue: "Venue to be decided",
-      city: "Your city",
-      cover:
-        "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1400&q=90",
-      members: 1,
-      capacity: Number(form.capacity) || 8,
-      initials: ["YOU"],
-      vibe: form.vibe,
-      tags: [form.vibe, "New group", "Open to join"],
-      description:
-        form.description.trim() ||
-        "A new SceneMates crew looking for people who want to share the night.",
-      host: "You",
-      joined: true,
-    };
+  const createGroup = async (form) => {
+    const response = await fetch("/api/groups", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(form) });
+    const payload = await response.json();
+    if (!response.ok) {
+      setGroupError(payload.error || "Group could not be created.");
+      return false;
+    }
+    const newGroup = payload.group;
 
     setGroups((current) => [newGroup, ...current]);
     setJoinedIds((current) => new Set(current).add(newGroup.id));
@@ -72,10 +93,13 @@ export default function GroupsExplorer() {
     setVibe("All");
     setQuery("");
     setCreateOpen(false);
+    setGroupError("");
+    return true;
   };
 
   return (
     <>
+      <PublicGuestRequest />
       <section className="mx-auto max-w-[1500px] px-5 pb-14 pt-10 sm:px-8 sm:pt-14 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
@@ -151,9 +175,19 @@ export default function GroupsExplorer() {
       </section>
 
       <section className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        {groupError && <p role="alert" className="mb-5 border border-red-400/20 bg-red-400/[0.06] px-4 py-3 text-sm text-red-200">{groupError}</p>}
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="flex gap-7">
+            <div className="flex flex-wrap gap-7">
+              <button
+                type="button"
+                onClick={() => setView("event-chats")}
+                className={`text-3xl font-medium tracking-[-0.04em] transition sm:text-5xl ${
+                  view === "event-chats" ? "text-white" : "text-zinc-700 hover:text-zinc-400"
+                }`}
+              >
+                Event chats
+              </button>
               <button
                 type="button"
                 onClick={() => setView("discover")}
@@ -162,6 +196,15 @@ export default function GroupsExplorer() {
                 }`}
               >
                 Discover
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("guest-list")}
+                className={`text-3xl font-medium tracking-[-0.04em] transition sm:text-5xl ${
+                  view === "guest-list" ? "text-white" : "text-zinc-700 hover:text-zinc-400"
+                }`}
+              >
+                Guest lists
               </button>
               <button
                 type="button"
@@ -178,7 +221,7 @@ export default function GroupsExplorer() {
             </p>
           </div>
 
-          <label className="flex h-12 w-full items-center gap-3 rounded-full border border-white/15 bg-black/45 px-5 text-zinc-400 backdrop-blur-sm lg:max-w-[360px]">
+          {!['guest-list', 'event-chats'].includes(view) && <label className="flex h-12 w-full items-center gap-3 rounded-full border border-white/15 bg-black/45 px-5 text-zinc-400 backdrop-blur-sm lg:max-w-[360px]">
             <Search size={16} />
             <input
               value={query}
@@ -186,10 +229,10 @@ export default function GroupsExplorer() {
               placeholder="Search groups or events"
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
             />
-          </label>
+          </label>}
         </div>
 
-        <div className="mt-8 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {view === "guest-list" ? <GuestListWorkspace /> : view === "event-chats" ? <EventChatWorkspace /> : <><div className="mt-8 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {groupVibes.map((groupVibe) => (
             <button
               key={groupVibe}
@@ -228,7 +271,7 @@ export default function GroupsExplorer() {
               to join.
             </p>
           </div>
-        )}
+        )}</>}
       </section>
 
       <CreateGroupModal

@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Heart, MapPin, Music2, Sparkles, X } from "lucide-react";
+import { Ban, Heart, MapPin, Music2, Sparkles, X } from "lucide-react";
 
-export default function ClubberProfileModal({ clubber, onClose }) {
+export default function ClubberProfileModal({ clubber, onClose, onBlock }) {
   const reducedMotion = useReducedMotion();
 
   return (
@@ -122,6 +122,7 @@ export default function ClubberProfileModal({ clubber, onClose }) {
                 >
                   <Heart size={15} /> Back to swiping
                 </button>
+                <button type="button" onClick={() => onBlock?.(clubber)} className="mt-3 flex h-10 items-center gap-2 px-2 text-xs text-red-300 transition hover:text-red-200"><Ban size={14} /> Block this profile</button>
               </div>
             </div>
           </motion.article>
